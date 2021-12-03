@@ -13,7 +13,7 @@ def apiOverview(request):
         'Search by Category': '/items/?category=category_name',
         'Search by Subcategory': '/items/?subcategory=category_name',
         'Add': '/add',
-        'Update': '/update'
+        'Update': '/update/pk'
     }
     return Response(api_urls)
 
@@ -36,6 +36,17 @@ def addItems(request):
     if items.objects.filter(**request.data).exists():
         raise serializers.ValidationError("This data already exists")
     
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def updateItems(request, pk):
+    Item = items.objects.get(id=pk)
+    serializer = ItemsSerializer(instance=Item, data=request.data)
+
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
