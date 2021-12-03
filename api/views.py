@@ -23,14 +23,23 @@ def getItems(request):
         Items=items.objects.filter(**request.query_params.dict())
     else:
         Items = items.objects.all()
+
     if Items:
         serializer = ItemsSerializer(Items, many=True)
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def addItems(request):
+    if request.method == 'GET':
+        Items = {
+            "name": "item-name",
+            "category": "item-category-name",
+            "subcategory": "item-subcategory-name",
+            "amount": "item-amount"
+        }
+        return Response(Items)
     serializer = ItemsSerializer(data=request.data)
 
     if items.objects.filter(**request.data).exists():
@@ -42,9 +51,17 @@ def addItems(request):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def updateItems(request, pk):
+    if request.method == 'GET':
+        Items = items.objects.get(pk=pk)
+        serializer = ItemsSerializer(Items)
+        return Response(serializer.data)
+
     Item = items.objects.get(id=pk)
+    if items.objects.filter(**request.data).exists():
+        print('yes')
+        raise serializers.ValidationError("This data already exists")
     serializer = ItemsSerializer(instance=Item, data=request.data)
 
     if serializer.is_valid():
