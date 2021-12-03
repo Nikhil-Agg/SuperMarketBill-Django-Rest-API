@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SupermarketBilling.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SupermarketBilling.devlopment')
 
 application = get_wsgi_application()
